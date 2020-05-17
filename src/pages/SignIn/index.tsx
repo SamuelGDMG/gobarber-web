@@ -1,4 +1,4 @@
-import React, {useRef, useCallback} from 'react';
+import React, {useRef, useCallback, useContext} from 'react';
 
 import { Container, Content, Background } from './styles';
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
@@ -13,13 +13,24 @@ import * as Yup from 'yup';
 import Input from '../../components/input/index';
 import Button from '../../components/button/index';
 
+import {useAuth} from '../../context/AuthContext';
+
 import getValidationErrors from '../../utils/getValidationErrors';
+
+interface SignInFormData{
+    email : string,
+    password: string
+}
 
 const SignIn: React.FC = () => {
 
     const formRef = useRef<FormHandles>(null);
 
-    const handleSubmit = useCallback(async (data: object) => {
+    const {SignIn, user} = useAuth();
+
+    console.log(user)
+
+    const handleSubmit = useCallback(async (data: SignInFormData) => {
         try{
 
             formRef.current?.setErrors({})
@@ -32,12 +43,17 @@ const SignIn: React.FC = () => {
                 abortEarly: false
             });
 
+            SignIn({
+                email : data.email,
+                password : data.password
+            });
+
         }catch(err){
             
             const errors = getValidationErrors(err);
             formRef.current?.setErrors(errors);
         }
-    }, [])
+    }, [SignIn])
 
     return (
         <Container>
